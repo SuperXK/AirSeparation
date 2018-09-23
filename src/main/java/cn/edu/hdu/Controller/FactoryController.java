@@ -8,7 +8,6 @@ import cn.edu.hdu.Utils.DateJsonValueProcessor;
 import cn.edu.hdu.Utils.FactoryUtil;
 import cn.edu.hdu.Utils.ResponseUtil;
 import cn.edu.hdu.Utils.Tools;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
@@ -29,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,7 +38,7 @@ public class FactoryController {
 	@Autowired
 	private FactoryService factoryService;
 
-	@RequestMapping({ "/current" })
+	@RequestMapping("/current" )
 	public String factoryCur(@RequestParam Integer factoryId, Model model) {
 		List<Factory> factoryInfoList = this.factoryService.listAllInfoByFactoryId(factoryId);
 		model.addAttribute("factoryInfoList", factoryInfoList);
@@ -47,8 +46,7 @@ public class FactoryController {
 		return "current";
 	}
 
-	@RequestMapping(value = { "/systemCurrent" }, method = {
-			org.springframework.web.bind.annotation.RequestMethod.GET })
+	@RequestMapping(value = { "/systemCurrent" }, method = { RequestMethod.GET })
 	public String SystemCurrentGet(@RequestParam Integer modelId, @RequestParam String modelName,
 			@RequestParam String systemName, Model model) throws UnsupportedEncodingException {
 		model.addAttribute("modelId", modelId);
@@ -57,8 +55,7 @@ public class FactoryController {
 		return "systemCurrent";
 	}
 
-	@RequestMapping(value = { "/systemCurrent" }, method = {
-			org.springframework.web.bind.annotation.RequestMethod.POST })
+	@RequestMapping(value = { "/systemCurrent" }, method = { RequestMethod.POST })
 	public String SystemCurrentPost(@RequestParam Integer modelId, @RequestParam String modelName,
 			@RequestParam String systemName, HttpServletResponse response, Model model)
 			throws UnsupportedEncodingException {
@@ -90,28 +87,25 @@ public class FactoryController {
 		return "systemCurrent";
 	}
 
-	@RequestMapping(value = { "/alarm" }, method = { org.springframework.web.bind.annotation.RequestMethod.GET })
+	@RequestMapping(value = { "/alarm" }, method = { RequestMethod.GET })
 	public ModelAndView alarSysGet(@RequestParam Integer factoryId) {
-		System.out.println(factoryId);
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("factoryId", factoryId);
 		mv.setViewName("alarm");
 		return mv;
 	}
 
-	@RequestMapping(value = { "/alarm" }, method = { org.springframework.web.bind.annotation.RequestMethod.POST })
+	@RequestMapping(value = { "/alarm" }, method = { RequestMethod.POST })
 	public void alarmSystem(@RequestParam Integer factoryId, HttpServletResponse response, Model model) {
-		System.out.println("当前报警属于工厂：" + factoryId);
+		log.info("当前报警属于工厂：" + factoryId);
 		int alarmId = 0;
 		List<Factory> fatories = this.factoryService.listAllInfoByFactoryId(factoryId);
 		for (Factory factory : fatories) {
 			if ("报警系统".equals(factory.getSystemName())) {
 				alarmId = factory.getModelId().intValue();
-				System.out.println(alarmId);
 			}
 		}
 		Map<String, Object> alarmMap = this.factoryService.getAlarmInfoByAlarmId(Integer.valueOf(alarmId));
-		System.out.println(alarmMap);
 		String KFTable = (String) alarmMap.get("alarm_url");
 		alarmMap.remove("alarm_id");
 		alarmMap.remove("alarm_url");
@@ -145,26 +139,24 @@ public class FactoryController {
 		return "history";
 	}
 
-	@RequestMapping(value = { "/systemHistory" }, method = {
-			org.springframework.web.bind.annotation.RequestMethod.GET })
+	@RequestMapping(value = { "/systemHistory" }, method = { RequestMethod.GET })
 	public String systemHistoryGET(@RequestParam Integer modelId, @RequestParam String modelName, Model model) {
 		model.addAttribute("modelId", modelId);
 		model.addAttribute("modelName", modelName);
 		return "systemHistory";
 	}
 
-	@RequestMapping(value = { "/systemHistory" }, method = {
-			org.springframework.web.bind.annotation.RequestMethod.POST })
+	@RequestMapping(value = { "/systemHistory" }, method = { RequestMethod.POST })
 	public void systemHistoryPOST(@RequestParam String dateStart, @RequestParam String dateEnd,
 			@RequestParam Integer modelId, @RequestParam String modelName, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		System.err.println("dateStart:" + dateStart);
+		log.info("dateStart:" + dateStart);
 		String year = dateStart.substring(0, dateStart.indexOf("-"));
 		String month = dateStart.substring(dateStart.indexOf("-") + 1, dateStart.lastIndexOf("-"));
 		if (month.length() == 1) {
 			month = "0" + month;
 		}
-		System.out.println(year + "," + month);
+		log.info(year + "," + month);
 
 		int paraNum = this.factoryService.getParaNum(modelName, modelId);
 		String ModelFields = FactoryUtil.assemblyModelField(paraNum, "para_url,para_num,");
@@ -176,16 +168,16 @@ public class FactoryController {
 
 		Map<String, Object> dateMap = DateFilter.dateFilter(dateStart, dateEnd);
 		String tableName = (String) paraMap.get("para_url");
-		System.out.println("查询年月：" + year + "," + month);
+		log.info("查询年月：" + year + "," + month);
 		Calendar now = Calendar.getInstance();
 		int nowyear = now.get(1);
 		int nowmonth = now.get(2) + 1;
-		System.out.println("当下年月：" + nowyear + "," + nowmonth);
+		log.info("当下年月：" + nowyear + "," + nowmonth);
 		if ((Integer.valueOf(year).intValue() != nowyear) || (Integer.valueOf(month).intValue() != nowmonth)) {
 			tableName = tableName + "_" + year + month;
 		}
-		System.out.println("查询的表：" + tableName);
-		List<Object> hisDataList = new ArrayList();
+		log.info("查询的表：" + tableName);
+		List<Object> hisDataList = new ArrayList<>();
 		try {
 			hisDataList = this.factoryService.getHistoryDatasByDate(dateMap, tableName, KFFields);
 		} catch (Exception e) {
@@ -212,7 +204,7 @@ public class FactoryController {
 		return modelAndView;
 	}
 
-	@RequestMapping(value = { "/dailyReport" }, method = { org.springframework.web.bind.annotation.RequestMethod.GET })
+	@RequestMapping(value = { "/dailyReport" }, method = { RequestMethod.GET })
 	@ResponseBody
 	public ModelAndView dailyReportGET(@RequestParam Integer factoryId) {
 		ModelAndView modelAndView = new ModelAndView();
@@ -221,81 +213,67 @@ public class FactoryController {
 		return modelAndView;
 	}
 
-	@RequestMapping(value = { "/dailyReport" }, method = { org.springframework.web.bind.annotation.RequestMethod.POST })
+	@RequestMapping(value = { "/dailyReport" }, method = { RequestMethod.POST })
 	@ResponseBody
 	public JSONObject dailyReportPost(@RequestBody Analysis analysis, HttpServletResponse response) {
-		System.out.println("analysis:" + analysis);
-
 		Integer factoryId = analysis.getFactoryId();
 		String dateFrist = analysis.getDateFrist();
 		String dateStart = analysis.getDateStart();
 		String dateEnd = analysis.getDateEnd();
-		System.err.println("dateStart:" + dateStart);
-		System.err.println("dateEnd:" + dateEnd);
-		System.err.println("dateFrist:" + dateFrist);
+		log.info("dateStart:" + dateStart + ",dateEnd:" + dateEnd + ",dateFrist:" + dateFrist);
 
 		Map<String, Object> paraAnalysisData = this.factoryService.getParaAnalysisData(factoryId);
-		System.err.println("paraAnalysisData:" + paraAnalysisData);
 
 		String out_day_tableName = String.valueOf(paraAnalysisData.get("out_table_day"));
 		String field = "TIME,kind,state,out01,out02,out03,out04,out05,out06,out07,out08,out09";
 
-		Map<String, Object> dateFilter = new LinkedHashMap();
+		Map<String, Object> dateFilter = new LinkedHashMap<>();
 		try {
 			dateFilter = DateFilter.dateFilter(dateEnd, dateFrist);
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
 		dateFilter.put("interval", null);
-		System.err.println(dateFilter);
 		List<Object> dailyData = this.factoryService.getHistoryDatasByDate(dateFilter, out_day_tableName, field);
-		System.out.println("dailyData:" + dailyData);
 
 		Map<String, Object> yDataPreHeadler = Tools.yesterdayDataPreHeadler(paraAnalysisData);
 		String tableName = (String) yDataPreHeadler.get("tableName");
 		String KFFields = (String) yDataPreHeadler.get("KFFields");
 
-		System.err.println("dateStart:" + dateStart);
 		String year = dateStart.substring(0, dateStart.indexOf("-"));
 		String month = dateStart.substring(dateStart.indexOf("-") + 1, dateStart.lastIndexOf("-"));
 		if (month.length() == 1) {
 			month = "0" + month;
 		}
-		System.out.println(year + "," + month);
 		Calendar now = Calendar.getInstance();
 		int nowyear = now.get(1);
 		int nowmonth = now.get(2) + 1;
-		System.out.println("当下年月：" + nowyear + "," + nowmonth);
 		if ((Integer.valueOf(year).intValue() != nowyear) || (Integer.valueOf(month).intValue() != nowmonth)) {
 			tableName = tableName + "_" + year + month;
 		}
-		System.out.println("查询的表：" + tableName);
 
-		List<Object> yDataList = new ArrayList();
-		Map<String, Object> dateFilter2 = new LinkedHashMap();
+		List<Object> yDataList = new ArrayList<>();
+		Map<String, Object> dateFilter2 = new LinkedHashMap<>();
 		try {
 			dateFilter2 = DateFilter.dateFilter(dateStart, dateEnd);
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
 		dateFilter2.put("interval", Integer.valueOf(72));
-		System.err.println(dateFilter2);
 		try {
 			yDataList = this.factoryService.getHistoryDatasByDate(dateFilter2, tableName, KFFields);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.err.println("yDataList:" + yDataList);
-		Map<String, Object> lineNumMap = new HashMap();
+		Map<String, Object> lineNumMap = new HashMap<>();
 		lineNumMap.put("lineNum", paraAnalysisData.get("line_num"));
 		String[] split = KFFields.split(",");
 		for (int i = 0; i < split.length; i++) {
 			lineNumMap.put("para" + i, split[i]);
 		}
 		yDataList.add(lineNumMap);
-		System.out.println("yDataList:" + yDataList);
 
-		Map<String, Object> result = new HashMap();
+		Map<String, Object> result = new HashMap<>();
 		String team1 = paraAnalysisData.get("team_01").toString();
 		String team2 = paraAnalysisData.get("team_02").toString();
 		String team3 = paraAnalysisData.get("team_03").toString();
@@ -309,13 +287,11 @@ public class FactoryController {
 		JsonConfig jsonConfig = new JsonConfig();
 		jsonConfig.registerJsonValueProcessor(Timestamp.class, new DateJsonValueProcessor("dd日HH:mm:ss"));
 		JSONObject jsonObject = JSONObject.fromObject(result, jsonConfig);
-		System.out.println(jsonObject);
 
 		return jsonObject;
 	}
 
-	@RequestMapping(value = { "/analysisHistory" }, method = {
-			org.springframework.web.bind.annotation.RequestMethod.GET })
+	@RequestMapping(value = { "/analysisHistory" }, method = { RequestMethod.GET })
 	@ResponseBody
 	public ModelAndView analysisHistory(@RequestParam Integer factoryId) {
 		JSONObject jsonObject = new JSONObject();
@@ -326,39 +302,30 @@ public class FactoryController {
 		return modelAndView;
 	}
 
-	@RequestMapping(value = { "/analysisHistory" }, method = {
-			org.springframework.web.bind.annotation.RequestMethod.POST })
+	@RequestMapping(value = { "/analysisHistory" }, method = { RequestMethod.POST })
 	public void analysisHistoryPost(@RequestBody Analysis analysis, HttpServletResponse response) {
 		Integer factoryId = analysis.getFactoryId();
 		String dateStart = analysis.getDateStart();
 		String dateEnd = analysis.getDateEnd();
-		System.err.println(dateStart);
-		System.err.println(dateEnd);
 
 		Map<String, Object> paraAnalysisData = this.factoryService.getParaAnalysisData(factoryId);
-		System.out.println(paraAnalysisData);
 		String tableName = String.valueOf(paraAnalysisData.get("out_table_short"));
-		System.err.println(tableName);
 		String KFFields = "TIME,out01,out02,out03,out04,out05,out06,out07";
 
-		List<Object> hisDataList = new ArrayList();
+		List<Object> hisDataList = new ArrayList<>();
 		try {
 			Map<String, Object> dateFilter = DateFilter.dateFilter(dateStart, dateEnd);
 			dateFilter.put("interval", null);
-			System.out.println(dateFilter);
 			hisDataList = this.factoryService.getHistoryDatasByDate(dateFilter, tableName, KFFields);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(hisDataList);
 
 		JSONArray jsonArray = JSONArray.fromObject(hisDataList);
-		System.out.println(jsonArray);
 		ResponseUtil.write(response, jsonArray);
 	}
 
-	@RequestMapping(value = { "/analysisState" }, method = {
-			org.springframework.web.bind.annotation.RequestMethod.GET })
+	@RequestMapping(value = { "/analysisState" }, method = { RequestMethod.GET })
 	@ResponseBody
 	public ModelAndView analysisHistoryGet(@RequestParam Integer factoryId) {
 		JSONObject jsonObject = new JSONObject();
@@ -369,8 +336,7 @@ public class FactoryController {
 		return modelAndView;
 	}
 
-	@RequestMapping(value = { "/analysisState" }, method = {
-			org.springframework.web.bind.annotation.RequestMethod.POST })
+	@RequestMapping(value = { "/analysisState" }, method = { RequestMethod.POST })
 	public void analysisStatePost(@RequestBody Analysis analysis, HttpServletResponse response) {
 		Integer factoryId = analysis.getFactoryId();
 		String dateStart = analysis.getDateStart();
@@ -400,7 +366,7 @@ public class FactoryController {
 				Map<String, Object> meta = this.factoryService
 						.getParasByModelNameAndId(String.valueOf("tb2_model" + modelNum), modelId);
 
-				List<Object> system = new ArrayList();
+				List<Object> system = new ArrayList<>();
 				for (Map.Entry<String, Object> entry : meta.entrySet()) {
 					if ((((String) entry.getKey()).contains("name"))
 							&& (!((String) entry.getKey()).contains("image"))) {
@@ -413,7 +379,7 @@ public class FactoryController {
 		List<Object> systemData = this.factoryService
 				.getNewestStateData(String.valueOf(paraAnalysisData.get("in_table")));
 
-		Object result = new LinkedHashMap();
+		Object result = new LinkedHashMap<>();
 		((Map) result).put("currentState", NewestStateDates);
 		((Map) result).put("hisDataList", hisDataList);
 		((Map) result).put("systemData", systemData);

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.edu.hdu.Dao.UserMapper">
-	<sql id="userColumns">loginname,username,password,rights,status,role_id,parent_id,open_id</sql>
+	<sql id="userColumns">loginname,username,password,rights,status,role_id,parent_id</sql>
 
 	<resultMap type="User" id="userAndRoleResultMap">
 		<id column="user_id" property="userId"/>
@@ -13,7 +13,6 @@
 		<result column="status" property="status"/>
 		<result column="last_login" property="lastLogin"/>
 		<result column="parent_id" property="parentId"/>
-		<result column="open_id" property="openId"/>
 		<association property="role" column="role_id" javaType="Role">
 			<id column="role_id" property="roleId"/>
 			<result column="role_name" property="roleName"/>
@@ -30,7 +29,6 @@
 		<result column="status" property="status"/>
 		<result column="role_id" property="roleId"/>
 		<result column="parent_id" property="parentId"/>
-		<result column="open_id" property="openId"/>
 	</resultMap> 
 	
 	<select id="listAllUser" resultMap="userAndRoleResultMap">
@@ -61,10 +59,6 @@
 		select * from tb2_user u where u.user_id = #{userId}
 	</select>
 	
-	<select id="getUserByOpenId" parameterType="String" resultMap="userResultMap">
-		select * from tb2_user where open_id = #{openId}
-	</select>
-	
 	<select id="getUserAndRoleById" parameterType="int" resultMap="userAndRoleResultMap">
 		select u.user_id,u.username,u.rights as user_rights,u.loginname,u.password,r.role_id,r.role_name,r.rights as role_rights 
 		from tb2_user u 
@@ -89,11 +83,8 @@
 		and last_login&lt;=#{lastLoginEnd} 
 		</if>
 	</select>
-	<select id="listAllOpenId" resultType="String">
-		select open_id from tb2_user where user_id is not null order by user_id asc
-	</select>
 	<insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
-		insert tb2_user (<include refid="userColumns"/>) values (#{loginname},#{username},#{password},#{rights},0,#{roleId},#{parentId},#{openId})
+		insert tb2_user (<include refid="userColumns"/>) values (#{loginname},#{username},#{password},#{rights},0,#{roleId},#{parentId})
 	</insert>
 	<update id="updateUser" parameterType="User">
 		update tb2_user set 
@@ -104,8 +95,7 @@
 		status=#{status},
 		role_id=#{roleId},
 		last_login=#{lastLogin},
-		parent_id=#{parentId},
-		open_id=#{openId} 
+		parent_id=#{parentId}
 		where user_id=#{userId}
 	</update>
 	<update id="updateLastLogin" parameterType="User">

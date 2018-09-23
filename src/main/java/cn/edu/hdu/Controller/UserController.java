@@ -53,7 +53,7 @@ public class UserController{
 		user = userService.getUserById(user.getUserId());
 	    List<User> userList = userService.listPageUser(user);
 	    for (User user2 : userList) {
-			System.out.println("用户表roleId关联角色表Id后,当前用户名下的所有子用户："+user2);
+	    	log.info("用户表roleId关联角色表Id后,当前用户名下的所有子用户："+user2);
 		}
 	    List<Role> roleList = roleService.listAllRoles();
 	    ModelAndView mv = new ModelAndView();
@@ -83,9 +83,7 @@ public class UserController{
 	 */
 	@RequestMapping("/save")
 	public ModelAndView saveUser(User user){
-		System.out.println("/save");
 	    ModelAndView mv = new ModelAndView();
-	    System.out.println(user);
 	    if ((user.getUserId() == null) || (user.getUserId().intValue() == 0)){
 	      if (!this.userService.insertUser(user)) {
 	        mv.addObject("msg", "failed");
@@ -103,7 +101,6 @@ public class UserController{
 	@RequestMapping(value="/save",method=RequestMethod.POST)
 	public ModelAndView saveUserPost(User user){
 	    ModelAndView mv = new ModelAndView();
-	    System.out.println(user);
 	    if ((user.getUserId() == null) || (user.getUserId().intValue() == 0)){
 	      if (!this.userService.insertUser(user)) {
 	        mv.addObject("msg", "failed");
@@ -126,7 +123,7 @@ public class UserController{
 	 * @throws Exception
 	 */
 	@RequestMapping("/modifyPassword")
-	public String modifyPassword(User user, HttpServletResponse response)throws Exception{
+	public void modifyPassword(User user, HttpServletResponse response)throws Exception{
 	    JSONObject result = new JSONObject();
 	    try{
 	      this.userService.updateUserBaseInfo(user);
@@ -136,9 +133,8 @@ public class UserController{
 	      e.printStackTrace();
 	      result.put("success", Boolean.valueOf(false));
 	    }
-	    System.out.println("修改密码信息："+result);
+	    log.info("修改密码信息："+result);
 	    ResponseUtil.write(response, result);
-	    return null;
 	}
   
 	/**

@@ -17,6 +17,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,7 +36,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 public class LoginController {
-
+	private static final Logger log = Logger.getLogger(LoginController.class);
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -60,7 +62,7 @@ public class LoginController {
 //				如果用户登陆成功后，记录当前用户的登陆状态status=1
 				user.setStatus(1);
 				userService.updateUserLoginStatus(user);
-				System.out.println("用户登录状态："+user.getStatus());
+				log.info("用户登录状态："+user.getStatus());
 				
 				user.setLastLogin(new Date());
 				userService.updateLastLogin(user);
@@ -105,7 +107,7 @@ public class LoginController {
 		Role role = user.getRole();
 		String roleRights = role != null ? role.getRights() : "";
 		String userRights = user.getRights();
-		System.err.println("用户权限："+userRights+"，角色权限："+roleRights);
+		log.info("用户权限："+userRights+"，角色权限："+roleRights);
 		session.setAttribute("sessionRoleRights", roleRights);
 		session.setAttribute("sessionUserRights", userRights);
 		List<Menu> menuList = menuService.listAllMenu();
@@ -127,7 +129,6 @@ public class LoginController {
 //			System.out.println("pc菜单列表：" + menu.getFactoryId() + "," + menu.getMenuName());
 //		}
 		JSONArray menuLists = JSONArray.fromObject(menuList);
-//		System.out.println(menuLists);
 		model.addAttribute("user", user);
 		model.addAttribute("menuLists", menuLists);
 		return "index";

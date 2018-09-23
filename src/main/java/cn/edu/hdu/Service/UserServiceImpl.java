@@ -70,10 +70,6 @@ public class UserServiceImpl implements UserService {
 		return this.userMapper.listAllUser();
 	}
 
-	public User getUserByOpenId(String openId) {
-		return this.userMapper.getUserByOpenId(openId);
-	}
-
 	public List<String> listAllOpenId() {
 		return this.userMapper.listAllOpenId();
 	}

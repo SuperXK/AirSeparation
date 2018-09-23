@@ -29,7 +29,5 @@ public abstract interface UserService {
 
 	public abstract List<User> listAllUser();
 
-	public abstract User getUserByOpenId(String paramString);
-
 	public abstract List<String> listAllOpenId();
 }

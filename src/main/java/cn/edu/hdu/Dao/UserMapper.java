@@ -34,7 +34,5 @@ public  interface UserMapper{
   
   public abstract void updateLastLogin(User paramUser);
   
-  public abstract User getUserByOpenId(String paramString);
-  
   public abstract List<String> listAllOpenId();
 }

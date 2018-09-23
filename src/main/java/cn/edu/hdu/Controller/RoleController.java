@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import net.sf.json.JSONArray;
 import org.apache.log4j.Logger;
@@ -24,20 +23,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/role")
 public class RoleController{
+	public static Logger log = Logger.getLogger(RoleController.class);
 	@Autowired
 	private RoleService roleService;
 	@Autowired
 	private MenuService menuService;
-	public static Logger log = Logger.getLogger(RoleController.class);
   
 	@RequestMapping
 	public String list(Map<String, Object> map){
-		System.out.println("/role");
-		for(Entry<String, Object> m:map.entrySet()) {
-			System.err.println(m.getKey()+","+m.getValue());
-		}
 		List<Role> roleList = this.roleService.listAllRoles();
-		System.err.println(roleList);
 		map.put("roleList", roleList);
 		return "role/role_list";
 	}
