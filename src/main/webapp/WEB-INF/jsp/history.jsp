@@ -53,12 +53,25 @@ body {
 </head>
 <body>
 	<script type="text/javascript">
+	var iframeheight;
+	//根据工厂的系统个数图片自适应高度
+	$(function(){
+		var factoryNum = ${factoryNum};
+		if(factoryNum<10){
+			iframeheight = 'width:100%;height:98%;'
+		}else if(factoryNum<21){
+			iframeheight = 'width:100%;height:84%;'
+		}else{
+			iframeheight = 'width:100%;height:72%;'
+		}
+		console.log(factoryNum+','+iframeheight)
+	})
 		function openTab(systemName, url, iconCls) {
 			/* console.log('get请求：'+'${pageContext.request.contextPath}/'+url);//ok.把modelId或者factoryId传过去，根据modelI查询相应的图像等信息 */
 			if ($("#tabs").tabs("exists", systemName)) {
 				$("#tabs").tabs("select", systemName);
 			} else {
-				var content = "<iframe frameborder=0 scrolling='auto' style='width:100%;height:98%' src='${pageContext.request.contextPath}/"
+				var content = "<iframe frameborder=0 scrolling='auto' style="+iframeheight+" src='${pageContext.request.contextPath}/"
 						+ url + "'></iframe>";
 				$("#tabs").tabs("add", {
 					title : systemName,

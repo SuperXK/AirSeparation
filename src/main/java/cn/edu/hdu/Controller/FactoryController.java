@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class FactoryController {
 		systemName = new String(systemName.getBytes("ISO-8859-1"), "UTF-8");
 		Map<String, Object> paraMap = this.factoryService.getParasByModelNameAndId(modelName, modelId);
 		String KFTable = (String) paraMap.get("para_url");
-
+		
 		StringBuilder KFFields = new StringBuilder();
 		for (Map.Entry<String, Object> str : paraMap.entrySet()) {
 			String key = (String) str.getKey();
@@ -136,6 +137,7 @@ public class FactoryController {
 	public String factoryHis(@RequestParam Integer factoryId, Model model) {
 		List<Factory> factoryInfoList = this.factoryService.listAllInfoByFactoryId(factoryId);
 		model.addAttribute("factoryInfoList", factoryInfoList);
+		model.addAttribute("factoryNum", factoryInfoList.size());
 		return "history";
 	}
 
@@ -165,8 +167,34 @@ public class FactoryController {
 		Map<String, Object> paraMap = this.factoryService.getParaValues(modelName, modelId, ModelFields);
 		String KFFields = FactoryUtil.assemblyKfField(paraMap, "TIME,");
 		log.info("KFFields:" + KFFields);
-
+/*		
+ * paraMap删除阀门状态
+*/		
+		int deletenum=0;
+		Iterator iterator = paraMap.keySet().iterator(); 
+		ArrayList<String> list = new ArrayList<String>();
+		while (iterator.hasNext())
+		{	String key = (String) iterator.next();
+			if((paraMap.get(key).toString().indexOf("round")!=-1)||(paraMap.get(key).toString().indexOf("square")!=-1))
+				{
+				int i=key.indexOf("_");
+				String keynum=key.substring(4, i); 
+				String key1="para"+keynum+"_suffix";
+				String key2="para"+keynum+"_name";
+				list.add(key1);
+				list.add(key2);
+				deletenum=deletenum+1;
+			}
+		}
+		for(int i=0;i<list.size();i++)
+		{
+			paraMap.remove(list.get(i));
+		}
+		paraNum=paraNum-deletenum;
+		paraMap.put("para_num", paraNum);
+		System.err.println(paraMap);
 		Map<String, Object> dateMap = DateFilter.dateFilter(dateStart, dateEnd);
+		System.err.println(dateMap);
 		String tableName = (String) paraMap.get("para_url");
 		log.info("查询年月：" + year + "," + month);
 		Calendar now = Calendar.getInstance();
@@ -349,7 +377,7 @@ public class FactoryController {
 
 		List<Object> NewestStateDates = this.factoryService.getNewestStateData(tableName_anaShort);
 
-		List<Object> hisDataList = new ArrayList();
+		List<Object> hisDataList = new ArrayList<Object>();
 		try {
 			Map<String, Object> dateFilter = DateFilter.dateFilter(dateStart, dateEnd);
 			hisDataList = this.factoryService.getAllData(dateFilter, tableName);
@@ -357,7 +385,7 @@ public class FactoryController {
 			e.printStackTrace();
 		}
 		List<Factory> factories = this.factoryService.listAllInfoByFactoryId(factoryId);
-		Map<String, Object> parameters = new LinkedHashMap();
+		Map<String, Object> parameters = new LinkedHashMap<String, Object>();
 		for (Factory factory : factories) {
 			String systemName = factory.getSystemName();
 			Integer modelNum = factory.getModelNum();

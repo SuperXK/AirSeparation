@@ -51,14 +51,86 @@ img{
 					//得到参数名和参数坐标名
 					var para_name = 'para'+i+'_name';
 					var para_coordinate = 'para'+i+'_coordinate';
+					var para_suffix='para'+i+'_suffix';
+					//var arr=paraMap[para_coordinate].split("height:");
+					var index=paraMap[para_coordinate].lastIndexOf("height:");
+					var height=paraMap[para_coordinate].substring(index+7);
+					console.log(height);
+					
+					var div2 = document.createElement("div"); 
 					//创建div2，并添加属性
 					//<div style="position:absolute;top:88px;left:515px;width:33px;height;">55.8</div>
-					var div2 = document.createElement("div"); 
-					div2.setAttribute("style", 'position:absolute;'+paraMap[para_coordinate]);
+					switch(paraMap[para_suffix]){
+					 case "square1":
+						if(dataMap[paraMap[para_name]]){
+							div2.setAttribute("style", 'background-color:#16FF35;'+'position:absolute;'+paraMap[para_coordinate]+';border-style:solid;'+'border-color: black;'+'border-width: 1px;'+'color:#000000;line-height'+height);
+						}
+						else{
+							div2.setAttribute("style", 'background-color:#ff062d;'+'position:absolute;'+paraMap[para_coordinate]+';border-style:solid;'+'border-color: black;'+'border-width: 1px;'+'color:#000000;line-height'+height);
+						   };
+						   break;
+					 case "square0": 
+						if(dataMap[paraMap[para_name]]){
+							div2.setAttribute("style", 'background-color:#ff062d;'+'position:absolute;'+paraMap[para_coordinate]+';border-style:solid;'+'border-color: black;'+'border-width: 1px;'+'color:#000000;line-height'+height);
+						}
+						else{
+							div2.setAttribute("style", 'background-color:#16FF35;'+'position:absolute;'+paraMap[para_coordinate]+';border-style:solid;'+'border-color: black;'+'border-width: 1px;'+'color:#000000;line-height'+height);
+						   };
+						   break;
+					 case "round1": 
+						 if(dataMap[paraMap[para_name]]){
+								div2.setAttribute("style", 'background-color:#16FF35;'+'position:absolute;'+paraMap[para_coordinate]+'border-radius:50%;border-style:solid;border-color: black;border-width: 1px;color:#000000;font-size: 15px;line-height:'+height);
+							}
+							else{
+								div2.setAttribute("style", 'background-color:#ff062d;'+'position:absolute;'+paraMap[para_coordinate]+'border-radius:50%;border-style:solid;border-color: black;border-width: 1px;color:#000000;font-size: 15px;line-height:'+height);
+							   };
+							   div2.innerHTML = "M";
+						break;
+					 case "round0":
+						 if(dataMap[paraMap[para_name]]){
+								div2.setAttribute("style", 'background-color:#ff062d;'+'position:absolute;'+paraMap[para_coordinate]+';border-radius:50%;border-style:solid;border-color: black;border-width: 1px;color:#000000;font-size: 15px;line-height:'+height);
+							}
+							else{
+								div2.setAttribute("style", 'background-color:#16FF35;'+'position:absolute;'+paraMap[para_coordinate]+';border-radius:50%;border-style:solid;border-color: black;border-width: 1px;color:#000000;font-size: 15px;line-height:'+height);
+							   };
+							   div2.innerHTML = "M";
+						break;
+					 default:
+						 var div2 = document.createElement("div"); 
+						div2.setAttribute("style", 'position:absolute;'+paraMap[para_coordinate]);
+						div2.innerHTML = dataMap[paraMap[para_name]];
+					}
+						var div1 = document.getElementById("div1");
+						div1.appendChild(div2); 
+					/* if(paraMap[para_suffix]=="square1"){
+						if(dataMap[paraMap[para_name]]){
+							div2.setAttribute("style", 'background-color:#16FF35;'+'position:absolute;'+paraMap[para_coordinate]+';border-style:solid;'+'border-color: black;'+'border-width: 1px;'+'color:#000000;line-height: 18px;');
+						}
+						else{
+							div2.setAttribute("style", 'background-color:#ff062d;'+'position:absolute;'+paraMap[para_coordinate]+';border-style:solid;'+'border-color: black;'+'border-width: 1px;'+'color:#000000;line-height: 18px;');
+						   } 
+						//div2.setAttribute("style", 'border-style:solid;'+'border-color: black;'+'border-width: 1px;');
+						//div2.setAttribute("style", 'position:absolute;'+paraMap[para_coordinate]);
+						var div1 = document.getElementById("div1");
+						div1.appendChild(div2);
+					}
+					else if(paraMap[para_suffix]=="square0"){
+						if(dataMap[paraMap[para_name]]){
+							div2.setAttribute("style", 'background-color:#ff062d;'+'position:absolute;'+paraMap[para_coordinate]+';border-style:solid;'+'border-color: black;'+'border-width: 1px;'+'color:#000000;line-height: 18px;');
+						}
+						else{
+							div2.setAttribute("style", 'background-color:#16FF35;'+'position:absolute;'+paraMap[para_coordinate]+';border-style:solid;'+'border-color: black;'+'border-width: 1px;'+'color:#000000;line-height: 18px;');
+						   }
+						var div1 = document.getElementById("div1");
+						div1.appendChild(div2);
+					}
+					else{
+						var div2 = document.createElement("div"); 
+						div2.setAttribute("style", 'position:absolute;'+paraMap[para_coordinate]);
 					//div2.setAttribute("style", 'position:absolute;'+paraMap[para_coordinate]+'border:1px dashed red;');
-					div2.innerHTML = dataMap[paraMap[para_name]];
-					var div1 = document.getElementById("div1");
-					div1.appendChild(div2);
+						div2.innerHTML = dataMap[paraMap[para_name]];
+						var div1 = document.getElementById("div1");
+						div1.appendChild(div2);}*/
 				} 
 			},
 			error: function() {console.log('请求失败！')}

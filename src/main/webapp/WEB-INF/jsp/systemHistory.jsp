@@ -7,6 +7,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link type="text/css" rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/main.css" />
 <script type="text/javascript"
@@ -219,6 +220,6 @@
 			readonly="readonly" style="width: 140px;" /> <a
 			href="javascript:search();" class="myBtn"><em>开始查询</em></a>
 	</div>
-	<div id="container" style="min-width: 800px; height: 400px"></div>
+	<div id="container" style="min-width: 800px; height: 400px;margin:auto;"></div>
 </body>
 </html>

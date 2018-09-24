@@ -59,7 +59,7 @@ body {
 	//根据工厂的系统个数图片自适应高度
 	$(function(){
 		var factoryNum = ${factoryNum};
-		if(factoryNum<12){
+		if(factoryNum<10){
 			iframeheight = 'width:100%;height:92%;'
 		}else if(factoryNum<21){
 			iframeheight = 'width:100%;height:84%;'
